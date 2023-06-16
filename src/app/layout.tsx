@@ -28,7 +28,7 @@ export default function RootLayout({
     <html lang='en'>
       <body
         suppressHydrationWarning={true}
-        className={`${robotoFlex.variable} ${baiJamjuree.variable} h-screen font-sans`}
+        className={`${robotoFlex.variable} ${baiJamjuree.variable} flex h-screen justify-center bg-blue-800 font-sans`}
       >
         {children}
       </body>
