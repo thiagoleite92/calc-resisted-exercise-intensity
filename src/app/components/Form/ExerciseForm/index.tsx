@@ -1,126 +1,122 @@
 'use client';
 
-import React, { useCallback, useEffect } from 'react';
-import { useForm, FormProvider, useFieldArray } from 'react-hook-form';
+import React, { useContext, useState } from 'react';
+import { useForm, FormProvider } from 'react-hook-form';
 
 import { zodResolver } from '@hookform/resolvers/zod';
-import { PlusCircle, XCircle } from 'lucide-react';
 import { z } from 'zod';
 
+import AppContext from '../../../context/AppContext';
+import { GraphicsRM } from '../../GraphsRM';
 import { Form } from '../index';
 
 type ExerciseSchemaType = z.infer<typeof exerciseSchema>;
 
+type FormDataType = {
+  exercise: string;
+  result: string;
+};
+
 const exerciseSchema = z.object({
-  exercise: z.array(
-    z.object({
-      title: z.string().nonempty().min(3, 'Mínimo 3 caracteres').max(25),
-      load: z.coerce.number().min(1, 'Mínimo 1 repetição'),
-      reps: z.coerce.number().min(1, 'Mínimo 1 Kg').max(99),
-      date: z.date().default(new Date())
-    })
-  )
+  exercise: z
+    .string({ required_error: 'Campo obrigatório' })
+    .nonempty('Campo obrigatório'),
+  load: z.coerce.number().min(1, 'Mínimo 1 Kg'),
+  reps: z.coerce.number().min(1, 'Mínimo 1 repetição').max(99),
+  date: z.date().default(new Date())
 });
 
 export default function ExerciseForm() {
+  const { setResetForm } = useContext(AppContext);
+  const [showClearBtn, setShowClearBtn] = useState<boolean>(false);
+
+  const [formData, setFormData] = useState<FormDataType>({
+    exercise: '',
+    result: ''
+  });
+
   const exerciseForm = useForm<ExerciseSchemaType>({
     resolver: zodResolver(exerciseSchema)
   });
+  const { handleSubmit, reset } = exerciseForm;
 
-  const { handleSubmit, control } = exerciseForm;
+  const onSubmit = ({ load, reps, exercise }: ExerciseSchemaType) => {
+    const k = 0.033;
 
-  const { fields, append, remove } = useFieldArray({
-    control,
-    name: 'exercise'
-  });
+    const result = Number(k * reps * load + load).toFixed(1);
+    setFormData({
+      exercise,
+      result
+    });
+    setShowClearBtn(true);
+  };
 
-  const addExercise = useCallback(() => {
-    append({ title: '', reps: 0, load: 0, date: new Date() });
-  }, [append]);
-
-  const onSubmit = (data: ExerciseSchemaType) => console.log(data);
-
-  useEffect(() => {
-    addExercise();
-  }, [addExercise]);
+  const handleResetForm = () => {
+    reset();
+    setShowClearBtn(false);
+    setResetForm?.((oldState: boolean) => !oldState);
+  };
 
   return (
     <>
       <FormProvider {...exerciseForm}>
         <form
-          className='mx-auto grid h-4/5 grid-cols-1 overflow-y-auto
-      rounded-sm sm:mt-4 sm:w-full sm:border sm:border-yellow-400 sm:p-4'
+          className='mx-auto h-full rounded-sm sm:mt-4 sm:w-full sm:border sm:border-yellow-400 sm:p-4'
           onSubmit={handleSubmit(onSubmit)}
         >
           <div className='flex h-fit flex-col gap-2'>
-            {fields.map((field, index) => {
-              const fieldName = `exercise.${index}.title`;
-              const fieldReps = `exercise.${index}.reps`;
-              const fieldLoads = `exercise.${index}.load`;
-
-              return (
-                <div className='flex h-fit flex-col gap-2' key={field.id}>
-                  <Form.Field>
-                    <Form.Label htmlFor='exercises'>Nome</Form.Label>
-                    <Form.SelectInput
-                      name={fieldName}
-                      type='text'
-                      placeholder='Levantamento Terra'
-                    />
-                    <Form.ErrorMessage field={fieldName} />
-                  </Form.Field>
-                  <div className=''>
-                    <Form.Field>
-                      <div className='flex w-full gap-8'>
-                        <Form.Label htmlFor='exercises'>Repetições</Form.Label>
-                        <Form.Input
-                          name={fieldReps}
-                          type='number'
-                          min='1'
-                          placeholder='8 reps'
-                        />
-                        <Form.ErrorMessage field={fieldReps} />
-                        <Form.Label htmlFor='exercises'>Carga</Form.Label>
-                        <Form.Input
-                          name={fieldLoads}
-                          type='number'
-                          min='1'
-                          placeholder='27kg'
-                        />
-                        <Form.ErrorMessage field={fieldLoads} />
-                      </div>
-                    </Form.Field>
-                  </div>
-                  <button
-                    type='button'
-                    onClick={() => remove(index)}
-                    className='self-end text-red-500'
-                    style={{
-                      display: fields?.length >= 2 ? 'block' : 'none'
-                    }}
-                  >
-                    <XCircle size={14} />
-                  </button>
-                </div>
-              );
-            })}
-
-            <div>
-              <button
-                type='button'
-                onClick={addExercise}
-                className='flex items-center gap-1 text-xs font-semibold text-emerald-500'
-              >
-                Adicionar
-                <PlusCircle size={14} />
-              </button>
+            <Form.Field>
+              <Form.Label htmlFor='exercise'>Nome</Form.Label>
+              <Form.SelectInput
+                name='exercise'
+                type='select'
+                placeholder='Ex: Levantamento Terra'
+              />
+              <Form.ErrorMessage field='exercise' />
+            </Form.Field>
+            <div className='flex h-fit  gap-2'>
+              <Form.Field>
+                <Form.Label htmlFor='load'>Carga</Form.Label>
+                <Form.Input
+                  type='number'
+                  name='load'
+                  min='1'
+                  placeholder='27kg'
+                ></Form.Input>
+                <Form.ErrorMessage field='load' />
+              </Form.Field>
+              <Form.Field>
+                <Form.Label htmlFor='reps'>Repetições</Form.Label>
+                <Form.Input
+                  type='number'
+                  name='reps'
+                  min='1'
+                  placeholder='8 reps'
+                ></Form.Input>
+                <Form.ErrorMessage field='reps' />
+              </Form.Field>
             </div>
           </div>
-
-          <button className='btn-hover mt-4 justify-center'>
-            Salvar na Planilha
-          </button>
+          <div className='flex w-full justify-between'>
+            <button className='btn-hover mt-4'>Calcular</button>
+            {showClearBtn && (
+              <button
+                className='btn-hover mt-4'
+                type='button'
+                onClick={handleResetForm}
+              >
+                Limpar
+              </button>
+            )}
+          </div>
+          <GraphicsRM exercise={formData.exercise} result={formData.result} />
         </form>
+        <button
+          className='btn-hover mt-4 justify-center'
+          disabled={!formData.exercise && !formData.result}
+        >
+          Salvar na Planilha
+        </button>
       </FormProvider>
     </>
   );

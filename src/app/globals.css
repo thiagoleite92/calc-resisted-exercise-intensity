@@ -3,5 +3,5 @@
 @tailwind utilities;
 
 .btn-hover {
- @apply flex h-10 items-center rounded border border-yellow-400 bg-transparent px-3 text-sm font-semibold text-yellow-400 hover:border-black hover:bg-yellow-400 hover:text-black;
+ @apply flex h-10 items-center rounded border border-yellow-400 bg-transparent px-3 text-sm font-semibold text-yellow-400 hover:border-black hover:bg-yellow-400 hover:text-black disabled:bg-slate-400 disabled:text-gray-300 disabled:border-gray-300 disabled:cursor-not-allowed;
 }

@@ -1,18 +1,32 @@
+'use client';
+
 import Link from 'next/link';
-import React from 'react';
+import { usePathname } from 'next/navigation';
+import React, { useEffect, useState } from 'react';
 
 export default function Header() {
+  const [subtitle, setSubtitle] = useState<string>('');
+
+  const pathname = usePathname();
+
+  useEffect(() => {
+    setSubtitle(pathname === '/planilha' ? 'Planilha' : 'Exercício');
+  }, [pathname]);
+
   return (
     <>
       <h1 className='flex items-center justify-between text-yellow-400'>
         Predição de Cargas de Treinamento{' '}
-        <Link href='/planilha' className='btn-hover'>
+        <Link
+          href={pathname === '/planilha' ? '/' : '/planilha'}
+          className='btn-hover'
+        >
           {' '}
-          Ver planilha
+          {pathname === '/planilha' ? 'Voltar' : 'Ver Planilha'}
         </Link>
       </h1>
       <hr className='border-1 h-[1px] border-t-0 bg-yellow-400' />
-      <h3 className=' text-yellow-400'>Exercícios</h3>
+      <h3 className=' text-yellow-400'>{subtitle}</h3>
     </>
   );
 }

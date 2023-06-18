@@ -3,5 +3,5 @@ import { HTMLAttributes } from 'react';
 type FieldProps = HTMLAttributes<HTMLDivElement>;
 
 export function Field(props: FieldProps) {
-  return <div className='' {...props} />;
+  return <div className='w-full' {...props} />;
 }

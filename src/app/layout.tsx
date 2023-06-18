@@ -3,10 +3,9 @@ import {
   Roboto_Flex as RobotoFlex,
   Bai_Jamjuree as BaiJamjuree
 } from 'next/font/google';
-import Link from 'next/link';
 
 import Header from './components/Header';
-
+import AppProvider from './context/AppAprovider';
 const robotoFlex = RobotoFlex({
   subsets: ['latin'],
   variable: '--font-roboto'
@@ -28,13 +27,15 @@ export default function RootLayout({
   children: React.ReactNode;
 }) {
   return (
-    <html lang='en'>
+    <html lang='en' className='h-screen w-screen'>
       <body
         suppressHydrationWarning={true}
-        className={`${robotoFlex.variable} ${baiJamjuree.variable} mx-auto flex h-full w-full flex-col gap-2 bg-blue-800 p-4 font-sans sm:w-3/5 sm:p-4`}
+        className={`${robotoFlex.variable} ${baiJamjuree.variable} mx-auto flex h-full w-full flex-col gap-2 bg-blue-900 p-4 font-sans sm:w-3/5 sm:p-4`}
       >
-        <Header />
-        {children}
+        <AppProvider>
+          <Header />
+          {children}
+        </AppProvider>
       </body>
     </html>
   );
