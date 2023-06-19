@@ -61,7 +61,7 @@ export default function ExerciseForm() {
     <>
       <FormProvider {...exerciseForm}>
         <form
-          className='mx-auto h-full rounded-sm sm:mt-4 sm:w-full sm:border sm:border-yellow-400 sm:p-4'
+          className='mx-auto h-full w-full space-y-4 rounded-sm sm:mt-4 sm:w-full sm:border sm:border-yellow-400 sm:p-4'
           onSubmit={handleSubmit(onSubmit)}
         >
           <div className='flex h-fit flex-col gap-2'>
@@ -98,10 +98,10 @@ export default function ExerciseForm() {
             </div>
           </div>
           <div className='flex w-full justify-between'>
-            <button className='btn-hover mt-4'>Calcular</button>
+            <button className='btn-hover '>Calcular</button>
             {showClearBtn && (
               <button
-                className='btn-hover mt-4'
+                className='btn-hover '
                 type='button'
                 onClick={handleResetForm}
               >
@@ -112,7 +112,7 @@ export default function ExerciseForm() {
           <GraphicsRM exercise={formData.exercise} result={formData.result} />
         </form>
         <button
-          className='btn-hover mt-4 justify-center'
+          className='btn-hover  justify-center'
           disabled={!formData.exercise && !formData.result}
         >
           Salvar na Planilha
