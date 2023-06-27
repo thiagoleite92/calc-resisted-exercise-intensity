@@ -4,8 +4,9 @@ import {
   Bai_Jamjuree as BaiJamjuree
 } from 'next/font/google';
 
-import Header from './components/Header';
-import AppProvider from './context/AppAprovider';
+import Header from '../components/Header';
+import AppProvider from '../context/AppAprovider';
+
 const robotoFlex = RobotoFlex({
   subsets: ['latin'],
   variable: '--font-roboto'

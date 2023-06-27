@@ -7,6 +7,8 @@ import { zodResolver } from '@hookform/resolvers/zod';
 import { v4 as uuidv4 } from 'uuid';
 import { z } from 'zod';
 
+import calcLoads from '../../../utils/calcLoads';
+
 import AppContext from '../../../context/AppContext';
 import { StorageService } from '../../../services/StorageService';
 import Button from '../../Button';
@@ -17,7 +19,11 @@ export type ExerciseSchemaType = z.infer<typeof exerciseSchema>;
 
 type FormDataType = {
   exercise: string;
-  result: string;
+  loads: Array<number>;
+};
+
+export type SheetExercise = ExerciseSchemaType & {
+  loads: Array<number>;
 };
 
 const exerciseSchema = z.object({
@@ -35,17 +41,18 @@ export default function ExerciseForm() {
 
   const { setResetForm } = useContext(AppContext);
   const [showClearBtn, setShowClearBtn] = useState<boolean>(false);
-  const [saveCalc, setSaveCalc] = useState<ExerciseSchemaType>({
+  const [saveCalc, setSaveCalc] = useState<SheetExercise>({
     id: '',
     exercise: '',
     load: 0,
     reps: 0,
-    date: new Date()
+    date: new Date(),
+    loads: []
   });
 
   const [formData, setFormData] = useState<FormDataType>({
     exercise: '',
-    result: ''
+    loads: []
   });
 
   const exerciseForm = useForm<ExerciseSchemaType>({
@@ -57,13 +64,17 @@ export default function ExerciseForm() {
     const k = 0.033;
 
     const result = Number(k * reps * load + load).toFixed(1);
+
+    const loads = calcLoads(result);
+
     setFormData({
       exercise,
-      result
+      loads
     });
+
     setShowClearBtn(true);
 
-    setSaveCalc({ load, reps, exercise, date, id });
+    setSaveCalc({ load, reps, exercise, date, id, loads });
   };
 
   const handleResetForm = () => {
@@ -77,7 +88,7 @@ export default function ExerciseForm() {
     reset();
     setFormData({
       exercise: '',
-      result: ''
+      loads: []
     });
     setResetForm?.((oldState: boolean) => !oldState);
   }, [reset, saveCalc, service, setResetForm]);
@@ -134,13 +145,13 @@ export default function ExerciseForm() {
               </button>
             )}
           </div>
-          <GraphicsRM exercise={formData.exercise} result={formData.result} />
+          <GraphicsRM data={formData} />
         </form>
         <Button
           customClass='btn-hover  justify-center'
-          isDisabled={!formData.exercise && !formData.result}
+          isDisabled={!formData.exercise && !formData.loads}
           onClick={onSave}
-          text='Salvar na Planilha'
+          text='Adicionar à Planilha'
         />
       </FormProvider>
     </>

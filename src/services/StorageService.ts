@@ -1,12 +1,12 @@
-import { ExerciseSchemaType } from '../components/Form/ExerciseForm';
+import { SheetExercise } from '../components/Form/ExerciseForm';
 
 export class StorageService {
-  saveCalc(data: ExerciseSchemaType): void {
+  saveCalc(data: SheetExercise): void {
     this.updateExerciseHistory(data);
     this.updateExerciseSheet(data);
   }
 
-  private updateExerciseHistory(data: ExerciseSchemaType): void {
+  private updateExerciseHistory(data: SheetExercise): void {
     const historySheet = this.getHistorySheet();
 
     if (historySheet?.has(data.exercise)) {
@@ -22,7 +22,7 @@ export class StorageService {
     );
   }
 
-  private updateExerciseSheet(data: ExerciseSchemaType): void {
+  private updateExerciseSheet(data: SheetExercise): void {
     const sheet = this.getSheet();
 
     const exerciseIndex = sheet.findIndex(
@@ -40,7 +40,7 @@ export class StorageService {
     }
   }
 
-  getSheet(): ExerciseSchemaType[] | [] {
+  getSheet(): SheetExercise[] | [] {
     const savedSheet = localStorage.getItem('sheet');
 
     return savedSheet !== null ? JSON.parse(savedSheet) : [];

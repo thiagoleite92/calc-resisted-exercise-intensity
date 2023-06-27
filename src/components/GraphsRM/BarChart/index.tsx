@@ -57,5 +57,5 @@ export default function BarChart({ loads }: BarChartProps) {
     ]
   };
 
-  return loads && <Bar data={data} />;
+  return loads?.length && <Bar data={data} />;
 }
