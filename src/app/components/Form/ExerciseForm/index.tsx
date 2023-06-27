@@ -1,16 +1,19 @@
 'use client';
 
-import React, { useContext, useState } from 'react';
+import React, { useCallback, useContext, useMemo, useState } from 'react';
 import { useForm, FormProvider } from 'react-hook-form';
 
 import { zodResolver } from '@hookform/resolvers/zod';
+import { v4 as uuidv4 } from 'uuid';
 import { z } from 'zod';
 
 import AppContext from '../../../context/AppContext';
+import { StorageService } from '../../../services/StorageService';
+import Button from '../../Button';
 import { GraphicsRM } from '../../GraphsRM';
 import { Form } from '../index';
 
-type ExerciseSchemaType = z.infer<typeof exerciseSchema>;
+export type ExerciseSchemaType = z.infer<typeof exerciseSchema>;
 
 type FormDataType = {
   exercise: string;
@@ -18,6 +21,7 @@ type FormDataType = {
 };
 
 const exerciseSchema = z.object({
+  id: z.string().default(uuidv4()),
   exercise: z
     .string({ required_error: 'Campo obrigatório' })
     .nonempty('Campo obrigatório'),
@@ -27,8 +31,17 @@ const exerciseSchema = z.object({
 });
 
 export default function ExerciseForm() {
+  const service = useMemo(() => new StorageService(), []);
+
   const { setResetForm } = useContext(AppContext);
   const [showClearBtn, setShowClearBtn] = useState<boolean>(false);
+  const [saveCalc, setSaveCalc] = useState<ExerciseSchemaType>({
+    id: '',
+    exercise: '',
+    load: 0,
+    reps: 0,
+    date: new Date()
+  });
 
   const [formData, setFormData] = useState<FormDataType>({
     exercise: '',
@@ -40,7 +53,7 @@ export default function ExerciseForm() {
   });
   const { handleSubmit, reset } = exerciseForm;
 
-  const onSubmit = ({ load, reps, exercise }: ExerciseSchemaType) => {
+  const onSubmit = ({ load, reps, exercise, date, id }: ExerciseSchemaType) => {
     const k = 0.033;
 
     const result = Number(k * reps * load + load).toFixed(1);
@@ -49,6 +62,8 @@ export default function ExerciseForm() {
       result
     });
     setShowClearBtn(true);
+
+    setSaveCalc({ load, reps, exercise, date, id });
   };
 
   const handleResetForm = () => {
@@ -56,6 +71,16 @@ export default function ExerciseForm() {
     setShowClearBtn(false);
     setResetForm?.((oldState: boolean) => !oldState);
   };
+
+  const onSave = useCallback(() => {
+    service.saveCalc(saveCalc);
+    reset();
+    setFormData({
+      exercise: '',
+      result: ''
+    });
+    setResetForm?.((oldState: boolean) => !oldState);
+  }, [reset, saveCalc, service, setResetForm]);
 
   return (
     <>
@@ -70,7 +95,7 @@ export default function ExerciseForm() {
               <Form.SelectInput
                 name='exercise'
                 type='select'
-                placeholder='Ex: Levantamento Terra'
+                placeholder='Selecione ou digite um novo exercício'
               />
               <Form.ErrorMessage field='exercise' />
             </Form.Field>
@@ -111,12 +136,12 @@ export default function ExerciseForm() {
           </div>
           <GraphicsRM exercise={formData.exercise} result={formData.result} />
         </form>
-        <button
-          className='btn-hover  justify-center'
-          disabled={!formData.exercise && !formData.result}
-        >
-          Salvar na Planilha
-        </button>
+        <Button
+          customClass='btn-hover  justify-center'
+          isDisabled={!formData.exercise && !formData.result}
+          onClick={onSave}
+          text='Salvar na Planilha'
+        />
       </FormProvider>
     </>
   );

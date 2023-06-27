@@ -31,6 +31,16 @@ export default function AppProvider({ children }: AppProviderType) {
     ...baseExercises
   ]);
 
+  useEffect(() => {
+    const sheet = localStorage.getItem('sheet');
+
+    if (sheet !== null) {
+      return;
+    } else {
+      localStorage.setItem('sheet', JSON.stringify([]));
+    }
+  }, []);
+
   const context: AppContextType = {
     exercises,
     setExercises,
