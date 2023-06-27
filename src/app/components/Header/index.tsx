@@ -5,13 +5,7 @@ import { usePathname } from 'next/navigation';
 import React, { useEffect, useState } from 'react';
 
 export default function Header() {
-  const [subtitle, setSubtitle] = useState<string>('');
-
   const pathname = usePathname();
-
-  useEffect(() => {
-    setSubtitle(pathname === '/planilha' ? 'Planilha' : 'Exercício');
-  }, [pathname]);
 
   return (
     <>
@@ -26,7 +20,9 @@ export default function Header() {
         </Link>
       </h1>
       <hr className='border-1 h-[1px] border-t-0 bg-yellow-400' />
-      <h3 className=' text-yellow-400'>{subtitle}</h3>
+      <h3 className=' text-yellow-400'>
+        {pathname === '/' ? 'Calculadora' : 'Planilha'}
+      </h3>
     </>
   );
 }
