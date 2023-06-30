@@ -4,14 +4,14 @@ import Link from 'next/link';
 import React, { useCallback, useEffect, useMemo, useState } from 'react';
 import { BarLoader } from 'react-spinners';
 
-import { ExerciseSchemaType } from '../../components/Form/ExerciseForm';
+import { SheetExercise } from '../../components/Form/ExerciseForm';
 import { StorageService } from '../../services/StorageService';
-import Rows from './components/Rows';
+import Sheet from './components/Sheet';
 
 export default function Grid() {
   const service = useMemo(() => new StorageService(), []);
 
-  const [sheet, setSheet] = useState<Array<ExerciseSchemaType> | []>([]);
+  const [sheet, setSheet] = useState<Array<SheetExercise> | []>([]);
   const [isLoading, setIsLoading] = useState<boolean>(true);
 
   const loadSheet = useCallback(() => {
@@ -38,6 +38,6 @@ export default function Grid() {
       para voltar e adicionar alguns exercícios.
     </span>
   ) : (
-    <Rows rows={sheet} />
+    <Sheet rows={sheet} />
   );
 }

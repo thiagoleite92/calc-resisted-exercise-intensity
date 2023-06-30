@@ -22,7 +22,7 @@ export default function BarChart({ loads }: BarChartProps) {
     labels,
     datasets: [
       {
-        label: '55%-70%',
+        label: ['55%-70%'],
         borderRadius: 0,
         data: loads,
         backgroundColor: [

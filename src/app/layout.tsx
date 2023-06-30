@@ -31,7 +31,7 @@ export default function RootLayout({
     <html lang='en' className='h-screen w-screen'>
       <body
         suppressHydrationWarning={true}
-        className={`${robotoFlex.variable} ${baiJamjuree.variable} mx-auto flex h-full w-full flex-col gap-2 bg-blue-900 p-4 font-sans sm:w-3/5 sm:p-4`}
+        className={`${robotoFlex.variable} ${baiJamjuree.variable} mx-auto flex h-full w-full flex-col gap-2 overflow-x-hidden bg-blue-900 p-4 font-sans sm:w-11/12 sm:p-4`}
       >
         <AppProvider>
           <Header />
